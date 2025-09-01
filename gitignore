@@ -1,0 +1,47 @@
+# Node.js dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+pnpm-lock.yaml
+
+# Environment variables
+.env
+.env.local
+client/.env
+server/.env
+
+# Build outputs
+dist/
+build/
+client/dist/
+client/build/
+server/dist/
+server/build/
+
+# Logs
+logs
+*.log
+logs/*.log
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# IDE/editor stuff
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Coverage & test
+coverage/
+*.lcov
+
+# Other
+*.tgz
+*.bak
+*.tmp
