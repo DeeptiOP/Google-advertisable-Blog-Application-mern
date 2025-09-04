@@ -6,13 +6,11 @@ import { useNavigate } from "react-router-dom";
 
 const Comments = () => {
   const [comments, setComments] = useState([]);
-  const [filter, setFilter] = useState("Not Approved");
   const [loading, setLoading] = useState(true);
 
   const { axios } = useAppContext();
   const navigate = useNavigate();
 
-  // ✅ Fetch all comments
   const fetchComments = async () => {
     try {
       const token = localStorage.getItem("adminToken");
@@ -29,14 +27,14 @@ const Comments = () => {
       });
 
       if (data.success) {
-        setComments(data.comments || []); // ✅ safe fallback
+        setComments(Array.isArray(data.comments) ? data.comments : []);
       } else {
         toast.error(data.message || "Failed to fetch comments");
-        setComments([]); // ✅ always keep it an array
+        setComments([]);
       }
     } catch (error) {
       toast.error(error.response?.data?.message || error.message);
-      setComments([]); // ✅ avoid undefined state
+      setComments([]);
     } finally {
       setLoading(false);
     }
@@ -46,34 +44,13 @@ const Comments = () => {
     fetchComments();
   }, []);
 
-  // ✅ Always safe to call .filter
-  const filteredComments = (comments || []).filter((comment) =>
-    filter === "Approved" ? comment.isApproved : !comment.isApproved
-  );
+  const allComments = comments || [];
 
   return (
     <div className="flex-1 pt-5 px-5 sm:pt-12 sm:pl-16 bg-blue-50/50">
       {/* Header */}
       <div className="flex justify-between items-center max-w-3xl">
         <h1 className="text-xl font-semibold">Comments</h1>
-        <div className="flex gap-4">
-          <button
-            onClick={() => setFilter("Approved")}
-            className={`cursor-pointer shadow-custom-sm border rounded-full px-4 py-1 text-xs ${
-              filter === "Approved" ? "text-primary" : "text-gray-700"
-            }`}
-          >
-            Approved
-          </button>
-          <button
-            onClick={() => setFilter("Not Approved")}
-            className={`cursor-pointer shadow-custom-sm border rounded-full px-4 py-1 text-xs ${
-              filter === "Not Approved" ? "text-primary" : "text-gray-700"
-            }`}
-          >
-            Not Approved
-          </button>
-        </div>
       </div>
 
       {/* Table */}
@@ -90,19 +67,18 @@ const Comments = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredComments.length > 0 ? (
-                filteredComments.map((comment, index) => (
+              {allComments.length > 0 ? (
+                allComments.map((comment, index) => (
                   <CommentTableItem
-                    key={comment._id}
+                    key={comment._id || index}
                     comment={comment}
-                    index={index + 1}
                     fetchComments={fetchComments}
                   />
                 ))
               ) : (
                 <tr>
                   <td colSpan="3" className="text-center py-6 text-gray-400">
-                    No {filter.toLowerCase()} comments found
+                    No comments found
                   </td>
                 </tr>
               )}

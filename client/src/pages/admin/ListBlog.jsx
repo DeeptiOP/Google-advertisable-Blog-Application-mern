@@ -28,7 +28,7 @@ const ListBlog = () => {
       });
 
       if (data.success) {
-        // ✅ backend sends { success: true, data: blogs }
+        
         setBlogs(data.data || []);
       } else {
         toast.error(data.message || "Failed to fetch blogs");

@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken";
 import Blog from "../models/blog.js";
-import Comment from "../models/comment.js";
+import Comment from "../models/Comment.js";
 
-// ✅ Admin Login
+//  Admin Login
 export const adminLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -25,7 +25,7 @@ export const adminLogin = async (req, res) => {
   }
 };
 
-// ✅ Get all blogs
+//  Get all blogs
 export const getAllBlogsAdmin = async (req, res) => {
   try {
     const blogs = await Blog.find({}).sort({ createdAt: -1 }).lean();
@@ -35,7 +35,7 @@ export const getAllBlogsAdmin = async (req, res) => {
   }
 };
 
-// ✅ Delete blog by ID
+
 export const deleteBlogById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -57,20 +57,22 @@ export const deleteBlogById = async (req, res) => {
   }
 };
 
-// ✅ Get all comments
+
 export const getAllComments = async (req, res) => {
   try {
     const comments = await Comment.find({})
-      .populate("blog")
+      .populate("blog", "title") 
       .sort({ createdAt: -1 })
       .lean();
-    res.json({ success: true, data: comments });
+
+    res.json({ success: true, comments });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// ✅ Dashboard data
+
+
 export const getDashboard = async (req, res) => {
   try {
     const recentBlogs = await Blog.find({})
@@ -96,7 +98,7 @@ export const getDashboard = async (req, res) => {
   }
 };
 
-// ✅ Delete comment by ID
+
 export const deleteCommentById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -118,10 +120,11 @@ export const deleteCommentById = async (req, res) => {
   }
 };
 
-// ✅ Approve comment by ID
+
 export const approveCommentById = async (req, res) => {
   try {
     const { id } = req.params;
+
     const updatedComment = await Comment.findByIdAndUpdate(
       id,
       { isApproved: true },
@@ -138,6 +141,27 @@ export const approveCommentById = async (req, res) => {
       success: true,
       message: "Comment approved successfully",
       data: updatedComment,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+export const togglePublishStatus = async (req, res) => {
+  try {
+    const { id } = req.params; 
+    const blog = await Blog.findById(id);
+
+    if (!blog) {
+      return res.status(404).json({ success: false, message: "Blog not found" });
+    }
+
+    blog.isPublished = !blog.isPublished;
+    await blog.save();
+
+    res.json({ 
+      success: true, 
+      message: `Blog has been ${blog.isPublished ? "published" : "unpublished"}`, 
+      blog 
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

@@ -33,7 +33,7 @@ const Dashboard = () => {
       });
 
       if (data.success) {
-        // ✅ fix here
+        
         setDashboardData(data.data);
       } else {
         toast.error(data.message || "Failed to fetch dashboard data");
@@ -80,15 +80,18 @@ const Dashboard = () => {
             </div>
 
             {/* Drafts */}
-            <div className="flex items-center gap-4 bg-white p-4 min-w-58 rounded shadow cursor-pointer hover:scale-105 transition-all">
-              <img src={assets.dashboard_icon_3} alt="Drafts" />
-              <div>
-                <p className="text-xl font-semibold text-gray-600">
-                  {dashboardData.drafts}
-                </p>
-                <p className="text-gray-400 font-light">Drafts</p>
-              </div>
-            </div>
+           <div
+  onClick={() => navigate("/admin/drafts")}
+  className="flex items-center gap-4 bg-white p-4 min-w-58 rounded shadow cursor-pointer hover:scale-105 transition-all"
+>
+  <img src={assets.dashboard_icon_3} alt="Drafts" />
+  <div>
+    <p className="text-xl font-semibold text-gray-600">
+      {dashboardData.drafts}
+    </p>
+    <p className="text-gray-400 font-light">Drafts</p>
+  </div>
+</div>
           </div>
 
           {/* Latest Blogs */}

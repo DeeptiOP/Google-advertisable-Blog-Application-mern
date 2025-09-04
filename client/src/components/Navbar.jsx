@@ -8,17 +8,16 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [menu, setMenu] = useState("All");
 
-  const { navigate, token } = useAppContext();
+  const { navigate, token, setSelectedCategory } = useAppContext(); 
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
-  // ✅ Define the redirect handlers
   const handleRedirect = () => {
-    navigate("/"); // logo → homepage
+    navigate("/");
   };
 
   const handleRedirect2 = () => {
-    navigate("/login"); // user icon → login page
+    navigate("/login");
   };
 
   return (
@@ -44,7 +43,10 @@ export default function Navbar() {
           {blogCategories.map((item) => (
             <motion.button
               key={item}
-              onClick={() => setMenu(item)}
+              onClick={() => {
+                setMenu(item);
+                setSelectedCategory(item); 
+              }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               animate={{
@@ -71,7 +73,7 @@ export default function Navbar() {
               <img
                 onClick={handleRedirect2}
                 className="h-8 w-8 cursor-pointer rounded-full transition-transform hover:scale-110"
-                src="https://cdn-icons-png.flaticon.com/512/1077/1077012.png"
+                src={assets.user_icon}
                 alt="user"
               />
             )}
@@ -96,6 +98,7 @@ export default function Navbar() {
               key={item}
               onClick={() => {
                 setMenu(item);
+                setSelectedCategory(item); 
                 setIsMenuOpen(false);
               }}
               className={`block w-full text-left px-3 py-2 rounded-md ${
@@ -116,7 +119,7 @@ export default function Navbar() {
                 setIsMenuOpen(false);
               }}
               className="h-8 w-8 cursor-pointer rounded-full transition-transform hover:scale-110"
-              src="https://cdn-icons-png.flaticon.com/512/1077/1077012.png"
+              src={assets.user_icon}
               alt="user"
             />
           </div>

@@ -9,8 +9,9 @@ import AddBlog from "./pages/admin/AddBlog";
 import ListBlog from "./pages/admin/ListBlog";
 import Comments from "./pages/admin/Comments";
 import Login from "./components/admin/Login";
+import Drafts from "./pages/admin/Drafts";
 import "quill/dist/quill.snow.css";
-import { Toaster } from "react-hot-toast";   // ✅ correct import
+import { Toaster } from "react-hot-toast";   
 import { useAppContext } from "./context/appContext";
 
 const App = () => {
@@ -23,7 +24,7 @@ const App = () => {
 const {token}=useAppContext()
   return (
     <div>
-      <Toaster />   {/* ✅ toaster component */}
+      <Toaster />   
       {!shouldHideNavbar && <Navbar />}
 
       <Routes>
@@ -35,6 +36,7 @@ const {token}=useAppContext()
           <Route index element={<Dashboard />} />
           <Route path="addBlog" element={<AddBlog />} />
           <Route path="listBlog" element={<ListBlog />} />
+           <Route path="drafts" element={<Drafts/>} />
           <Route path="comments" element={<Comments />} />
         </Route>
         <Route path="/login" element={<Login />} />

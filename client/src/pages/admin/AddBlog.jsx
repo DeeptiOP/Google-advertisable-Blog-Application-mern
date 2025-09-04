@@ -64,10 +64,10 @@ const AddBlog = () => {
     }
   };
 
-  // ✅ Placeholder for AI content generation
+
   const generateContent = async () => {
     if (!quillRef.current) return;
-    // Example: Insert placeholder AI text
+    
     quillRef.current.root.innerHTML =
       "<p>This is AI-generated blog content...</p>";
   };
@@ -78,7 +78,7 @@ const AddBlog = () => {
       className="flex justify-center items-start bg-blue-50/50 text-gray-600 h-screen w-screen p-4 overflow-auto"
     >
       <div className="bg-white w-full max-w-3xl p-6 md:p-10 shadow-lg rounded-2xl">
-        {/* Thumbnail Upload */}
+     
         <p className="font-medium text-gray-700">Upload Thumbnail</p>
         <label htmlFor="image" className="block mt-2 cursor-pointer">
           <img

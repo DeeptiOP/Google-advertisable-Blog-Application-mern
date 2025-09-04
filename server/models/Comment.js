@@ -1,20 +1,18 @@
 import mongoose from "mongoose";
 
-const commentSchema = new mongoose.Schema(
+const CommentSchema = new mongoose.Schema(
   {
-    blog: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Blog", // ✅ must match Blog model name
-      required: true,
-    },
     name: { type: String, required: true },
     email: { type: String, required: true },
     message: { type: String, required: true },
-    isApproved: { type: Boolean, default: false }, // ✅ default false
+    blog: { type: mongoose.Schema.Types.ObjectId, ref: "Blog", required: true },
+    isApproved: { type: Boolean, default: true }, 
   },
   { timestamps: true }
 );
 
-const Comment = mongoose.model("Comment", commentSchema);
+// Prevent OverwriteModelError
+const Comment =
+  mongoose.models.Comment || mongoose.model("Comment", CommentSchema);
 
 export default Comment;

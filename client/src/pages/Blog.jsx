@@ -3,10 +3,11 @@ import { useParams } from "react-router-dom";
 import { assets, blog_data, comments_data } from "../assets/assets";
 import Moment from "moment";
 import Footer from "../components/Footer";
-import { Loader } from "lucide-react";
+import { Facebook, Instagram, Loader } from "lucide-react";
 import LoadingSpiner from "./LoadingSpiner";
 import { useAppContext } from "../context/appContext";
 import toast from "react-hot-toast";
+import { Github, Twitter, Linkedin, Mail } from "lucide-react";
 const Blog = () => {
   const { id } = useParams();
 
@@ -15,36 +16,51 @@ const Blog = () => {
   const [comments, setComments] = useState([]);
   const [name, setName] = useState("");
   const [content, setContent] = useState("");
-  const fetchComments = async () => {
+  const[message,setMessage]=useState('');
+    const[email,setEmail]=useState('');
+const fetchComments = async () => {
+  try {
+    const { data } = await axios.get(`/api/blog/${id}/comments`);
+    console.log("Comments API Response:", data); // 👈 add this here
+    if (data.success) {
+      setComments(data.comments);
+    } else {
+      toast.error(data.message);
+    }
+  } catch (error) {
+    console.error("Fetch comments error:", error.response?.data || error.message);
+    toast.error(error.response?.data?.message || "Failed to load comments");
+  }
+};
 
-    try {
-      const {data}=await axios.post('/api/blog/comments',{blogId:id})
-      if(data.success){
-        setComments(data.comments)
-      }
-      else{
-        toast.error(data.message)
-      }
-    } catch (error) {
-      
-        toast.error(error.message)
+const addcomment = async (e) => {
+  e.preventDefault();
+  try {
+    const { data } = await axios.post(`/api/blog/${id}/comments`, {
+      name,
+      email,
+      message,
+    });
+
+    if (data.success) {
+      toast.success(data.message);
+      setName("");
+      setEmail("");
+      setMessage("");
+      fetchComments(); 
+    } else {
+      toast.error(data.message || "Something went wrong!");
     }
-  };
-  const addcomment = async (e) => {
-    try {
-        const {data}=await axios.post('/api/blog/add-comment',{blog:id,name,content});
-        if(data.success){
-          toast.success(data.message)
-          setName('')
-          setContent('')
-        }else{
-          toast.error(error.message)
-        }
-   
-    } catch (error) {
-      
-    }
-  };
+  } catch (error) {
+    console.error("Add comment error:", error.response?.data || error.message);
+    toast.error(error.response?.data?.message || "Failed to add comment");
+  }
+};
+
+
+
+
+
    const fetchBlogData = async() => {
   try {
     const {data}=await axios.get(`/api/blog/${id}`)
@@ -95,25 +111,26 @@ const Blog = () => {
             {/* comment section */}
             <div className="mt-14 mb-10 max-w-3xl mx-auto">
               <p className="font-semibold mb-4">
-                Comments( {comments_data.length})
+                Comments( {comments.length})
               </p>
 
               <div className="flex flex-col gap-4">
-                {comments_data.map((item, index) => (
-                  <div
-                    key={index}
-                    className="relative bg-primary/2 border border-primary/5 max-w-xl p-4 rounded text-gray-600"
-                  >
-                    <div className="flex items-center gap-2 mb-2">
-                      <img src={assets.user_icon} alt="" className="w-6" />
-                      <p className="font-medium">{item.name} </p>
-                    </div>
-                    <p className="text-sm max-w-md ml-8">{item.content}</p>
-                    <div className="absolute right-4 bottom-3 flex items-center gap-2 text-xs">
-                      {Moment(item.createdAt).fromNow()}
-                    </div>
-                  </div>
-                ))}
+               {comments.map((item, index) => (
+  <div
+    key={index}
+    className="relative bg-primary/2 border border-primary/5 max-w-xl p-4 rounded text-gray-600"
+  >
+    <div className="flex items-center gap-2 mb-2">
+      <img src={assets.user_icon} alt="" className="w-6" />
+      <p className="font-medium">{item.name}</p>
+    </div>
+    <p className="text-sm max-w-md ml-8">{item.message}</p>
+    <div className="absolute right-4 bottom-3 flex items-center gap-2 text-xs">
+      {Moment(item.createdAt).fromNow()}
+    </div>
+  </div>
+))}
+
               </div>
             </div>
 
@@ -122,34 +139,38 @@ const Blog = () => {
             <div className="max-w-3xl mx-auto">
               <p className="font-semibold mb-4">Add your comment</p>
 
-              <form
-                onSubmit={addcomment}
-                className="flex flex-col items-start gap-4 max-w-lg"
-              >
-                <input
-                  onChange={(e) => setName(e.target.value)}
-                  value={name}
-                  className="w-full p-2 border-gray-300 rounded outline-none border"
-                  type="text"
-                  placeholder="Name"
-                  required
-                />
+            <form onSubmit={addcomment} className="flex flex-col items-start gap-4 max-w-lg">
+  <input
+    type="text"
+    placeholder="Name"
+    value={name}
+    onChange={(e) => setName(e.target.value)}
+    className="w-full p-2 border rounded"
+    required
+  />
 
-                <textarea
-                  onChange={(e) => setContent(e.target.value)}
-                  value={content}
-                  className="w-full p-2 border border-gray-300 rounded outline-none h-48 "
-                  placeholder="Comment"
-                  required
-                ></textarea>
+  <input
+    type="email"
+    placeholder="Email"
+    value={email}
+    onChange={(e) => setEmail(e.target.value)}
+    className="w-full p-2 border rounded"
+    required
+  />
 
-                <button
-                  className="bg-primary text-white rounded p-2 px-8 hover:scale-102 transition-all cursor-pointer"
-                  type="submit"
-                >
-                  Submit
-                </button>
-              </form>
+  <textarea
+    placeholder="Message"
+    value={message}
+    onChange={(e) => setMessage(e.target.value)}
+    className="w-full p-2 border rounded h-48"
+    required
+  />
+
+  <button type="submit" className="bg-primary text-white p-2 px-8 rounded">
+    Submit
+  </button>
+</form>
+
             </div>
             {/* 
 share button */}
@@ -158,9 +179,38 @@ share button */}
                 Share this article in social media
               </p>
               <div className="flex">
-                <img src={assets.facebook_icon} width={50} alt="" />
-                <img src={assets.twitter_icon} width={50} alt="" />
-                <img src={assets.googleplus_icon} width={50} alt="" />
+              <div className="flex gap-6">
+          <a
+            href="https://facebook.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-primary transition-colors"
+          >
+            <Facebook size={22} />
+          </a>
+          <a
+            href="https://twitter.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-primary transition-colors"
+          >
+            <Twitter size={22} />
+          </a>
+          <a
+            href="https://instagram.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-primary transition-colors"
+          >
+            <Instagram size={22} />
+          </a>
+          <a
+            href="mailto:contact@blognest.com"
+            className="hover:text-primary transition-colors"
+          >
+            <Mail size={22} />
+          </a>
+        </div>
               </div>
             </div>
           </div>
